@@ -1,21 +1,21 @@
+use crate::formatters::format_stiki_markdown;
+use crate::StikiPage;
 use ipfs::{make_ipld, Ipfs, IpfsOptions, IpfsPath, UninitializedIpfs};
-// use cid::Cid;
+use std::convert::TryFrom;
 use tokio::task;
 
+#[derive(Debug)]
 pub struct IpfsInterface {
     pub ipfs: Ipfs<ipfs::Types>,
 }
 
 impl IpfsInterface {
-    pub fn new() -> IpfsInterface {
-        let rt = tokio::runtime::Runtime::new().expect("Failed to create event loop");
-
-        let (ipfs, fut): (Ipfs<ipfs::Types>, _) = rt.block_on(async move {
+    pub async fn new() -> IpfsInterface {
+        let (ipfs, fut): (Ipfs<ipfs::Types>, _) =
             UninitializedIpfs::new(IpfsOptions::inmemory_with_generated_keys())
                 .start()
                 .await
-                .unwrap()
-        });
+                .unwrap();
         task::spawn(fut);
         IpfsInterface { ipfs }
     }
@@ -29,5 +29,16 @@ impl IpfsInterface {
         IpfsPath::from(cid).to_string()
     }
 
-    pub(crate) async fn get_file(&self, hash: String) {}
+    pub(crate) async fn get_stiki(&self, cid: String) -> String {
+        let path = IpfsPath::try_from(&*cid).unwrap();
+        let path1 = path.sub_path("0").unwrap();
+        let stiki_content: StikiPage =
+            serde_json::from_str(&format!("{:#?}", self.ipfs.get_dag(path1).await.unwrap()))
+                .unwrap();
+        format_stiki_markdown(stiki_content.body.clone(), stiki_content.refs)
+    }
+
+    // pub(crate) async fn list_files(&self, peer_id: Option<String>) {
+    //     let data = self.ipfs.list_pins(None).await;
+    // }
 }

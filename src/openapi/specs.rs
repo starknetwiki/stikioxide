@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Stiki {
     pub body: String,
     pub refs: HashMap<String, String>,
@@ -15,7 +15,7 @@ pub(crate) enum StatusEnum {
 }
 
 impl StatusEnum {
-    fn as_str(&self) -> &'static str {
+    pub(crate) fn as_str(&self) -> &'static str {
         match self {
             StatusEnum::OK => "OK",
             StatusEnum::ERR => "ERR",
@@ -23,8 +23,9 @@ impl StatusEnum {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct NewStikiResp {
-    status: String,
-    message: Option<String>,
-    body: Option<String>,
+    pub status: String,
+    pub message: Option<String>,
+    pub body: Option<String>,
 }
