@@ -1,21 +1,15 @@
 mod formatters;
 mod ipfs_interface;
 mod openapi;
-use serde::{Deserialize, Serialize};
+// use serde::{Deserialize, Serialize};
 use serde_json::Result;
 
-use actix_web::{
-    get, http::header::ContentType, patch, web, App, HttpResponse, HttpServer, Responder,
-};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 
 use crate::openapi::specs::Stiki;
-use futures::join;
-use ipfs::{make_ipld, Ipfs, IpfsOptions, IpfsPath, TestTypes, UninitializedIpfs};
 
-#[macro_use]
-use lazy_static::lazy_static;
-use tokio::task;
 use crate::ipfs_interface::interface::IpfsInterface;
+use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref IPFS: IpfsInterface = IpfsInterface::new();
@@ -51,12 +45,12 @@ async fn list() -> impl Responder {
 }
 
 #[get("/v1/list/{peerid}")]
-async fn list_peer(peerid: web::Path<String>) -> impl Responder {
+async fn list_peer(_peerid: web::Path<String>) -> impl Responder {
     r#"["asd", "fgh"]"#
 }
 
 #[get("/v1/get-stiki/{stikiid}")]
-async fn get_stiki(stiki: web::Path<String>) -> impl Responder {
+async fn get_stiki(_stiki: web::Path<String>) -> impl Responder {
     let resp = r#"
 # This is an example.
 
