@@ -1,10 +1,15 @@
 mod formatters;
 mod ipfs_interface;
 mod openapi;
+
+use actix_cors::Cors;
+
 // use serde::{Deserialize, Serialize};
 use serde_json::Result;
 
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{
+    get, http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder,
+};
 
 use crate::openapi::specs::Stiki;
 
@@ -62,6 +67,15 @@ bla bla bla"#;
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
+            .wrap(
+                Cors::default()
+                    .allowed_origin("http://localhost:3000")
+                    .allowed_methods(vec!["GET", "POST", "PATCH"])
+                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+                    .allowed_header(header::CONTENT_TYPE)
+                    .supports_credentials()
+                    .max_age(3600),
+            )
             .route("/", web::get().to(|| async { "hi!" }))
             .service(web::resource("/v1/add-stiki").route(web::post().to(add_stiki)))
             .service(web::resource("/v1/modify-stiki").route(web::patch().to(modify_stiki)))
