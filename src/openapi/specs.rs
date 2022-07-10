@@ -6,7 +6,7 @@ pub(crate) struct Stiki {
     pub body: String,
     pub refs: HashMap<String, String>,
     pub id: Option<String>,
-    pub pinned: bool,
+    pub pinned: Option<bool>,
 }
 
 pub(crate) enum StatusEnum {
