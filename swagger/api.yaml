@@ -1,0 +1,183 @@
+swagger: "2.0"
+info:
+  description: "Local IPFS node abstraction layer for stiki, aka stikioxide(cause rust=oxidation lol)"
+  version: "0.0.1"
+  title: "stikioxide"
+host: "127.0.0.1:42000"
+basePath: "/v1"
+tags:
+- name: "Stiki"
+  description: "Local stiki ipfs interface"
+schemes:
+- "https"
+- "http"
+paths:
+  /add-stiki:
+    post:
+      summary: "Create a new stiki page"
+      description: ""
+      operationId: "addStiki"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "A markdown representation of the page + media(images, or other things that need to be stored on ipfs."
+        required: true
+        schema:
+          $ref: "#/definitions/Stiki"
+      responses:
+        "405":
+          description: "Invalid input"
+        "200":
+          description: "Sucessfully added stiki"
+          schema:
+            $ref: "#/definitions/StikiResp"
+  /modify-stiki:
+    patch:
+      summary: "Modify an existing stiki page"
+      description: ""
+      operationId: "modifyStiki"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Pet object that needs to be added to the store ![asd.jpg](asd.jpg)"
+        required: true
+        schema:
+          $ref: "#/definitions/Stiki"
+      responses:
+        "405":
+          description: "Invalid input"
+        "200":
+          description: "Sucessfully modified stiki"
+          schema:
+            $ref: "#/definitions/StikiResp"
+  /list:
+    get:
+      summary: "Get a complete list of all files stored on ipfs for your own user(peer id)"
+      description: ""
+      operationId: "listFs"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "A full list of responses"
+          schema:
+            $ref: "#/definitions/listfs"
+  /list/{peerId}:
+    get:
+      summary: "Get a complete list of all files stored on ipfs for a given peer id."
+      description: ""
+      operationId: "listFsForPeer"
+      parameters:
+      - name: peerId
+        in: path
+        type: string
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "A full list of responses"
+          schema:
+            $ref: "#/definitions/listfs"
+  /get-stiki/{stikiId}:
+    get:
+      summary: ""
+      description: ""
+      operationId: "getStiki"
+      parameters:
+      - name: stikiId
+        in: path
+        type: string
+        required: true
+      responses:
+        "404":
+          description: "Stiki not found"
+        "200":
+          description: "all went well"
+          schema:
+            $ref: "#/definitions/getstiki"
+definitions:
+  Stiki:
+    type: "object"
+    required:
+    - "body"
+    properties:
+      body:
+        type: "string"
+        example: "The quick brown fox jumps over the lazy dog (markdown iirc). ![asd.jpg](asd.jpg)"
+      refs:
+        type: "object"
+        description: "Key-value pairs of all the filenames(could be hashes as well) that need to be included as keys and base64-encoded representations as values"
+        example: {"asd.jpg": "ZXhhbXBsZQo="}
+        items:
+          type: "object"
+          properties:
+            key:
+              type: "string"
+            value:
+              type: "string"
+            
+      id:
+        type: "string"
+        description: "Passed on PATCH requests only, for updating an existing media"
+      pinned:
+        type: "boolean"
+  StikiResp:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - "ok"
+          - "err"
+        description: "Whether storing the files was successfull."
+      message:
+        type: string
+        description: "Most likely related to error messages"
+      body:
+        type: string
+        description: "If the operation was succesful, the body will contain an id, which will point to an internally generated json. containing similar structure as #/definitions/Stiki, with the exception that the refs will contain ipfs links to the images and media stored on ipfs as separate ones."
+  getstiki:
+    type: object
+    properties:
+      body:
+        type: string
+        example: "The quick brown fox jumps over the lazy dog (markdown iirc). ![asd.jpg](asd.jpg)"
+      refs:
+        type: "object"
+        description: "Key-value pairs of all the filenames(could be hashes as well) that need to be included as keys and base64-encoded representations as values"
+        example: {"asd.jpg": "ZXhhbXBsZQo="}
+        items:
+          type: "object"
+          properties:
+            key:
+              type: "string"
+            value:
+              type: "string"
+  peerId:
+    type: string
+  listfs:
+    type: array
+    items:
+      type: "string"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

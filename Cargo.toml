@@ -1,0 +1,24 @@
+[package]
+name = "stikioxide"
+version = "0.1.0"
+edition = "2021"
+
+
+
+[dependencies]
+anyhow = "1.0"
+tracing = { default-features = false, features = ["log"], version = "0.1" }
+tracing-subscriber = { default-features = false, features = ["fmt", "tracing-log", "env-filter"], version = "0.3.14" }
+cid = "0.8.5"
+ipfs = { git= "https://github.com/rs-ipfs/rust-ipfs"}
+tokio = { default-features = false, features = ["fs", "macros", "rt-multi-thread", "sync"], version = "1.0" }
+tokio-stream = { version = "0.1", features = ["fs"] }
+tokio-util = { version = "0.6" }
+futures = { default-features = false, version = "0.3.9", features = ["alloc", "std"] }
+serde_json = "1.0.59"
+actix-web = "4.1.0"
+paperclip = { version = "0.6"}
+serde = { version = "1.0", features = ["derive"] }
+lazy_static = "1.4.0"
+structopt = "0.3.26"
+log = "0.4.17"
