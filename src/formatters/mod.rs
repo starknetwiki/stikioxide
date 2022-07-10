@@ -5,5 +5,5 @@ pub fn format_stiki_markdown(body: String, refs: HashMap<String, String>) -> Str
     for (artifact_name, artifact_value) in refs.iter() {
         response = response.replace(artifact_name, artifact_value);
     }
-    body
+    response
 }
