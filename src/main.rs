@@ -65,7 +65,6 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(|| async { "hi!" }))
             .service(web::resource("/v1/add-stiki").route(web::post().to(add_stiki)))
             .service(web::resource("/v1/modify-stiki").route(web::patch().to(modify_stiki)))
-            .service(web::resource("/v1/list").route(web::post().to(modify_stiki)))
             .service(list)
             .service(list_peer)
             .service(get_stiki)
